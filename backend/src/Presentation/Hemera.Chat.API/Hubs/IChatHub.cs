@@ -1,4 +1,4 @@
-﻿using HemeraChat.Entities;
+﻿using Hemera.Chat.Entities;
 
 namespace HemeraChat.Hubs;
 public interface IChatHub

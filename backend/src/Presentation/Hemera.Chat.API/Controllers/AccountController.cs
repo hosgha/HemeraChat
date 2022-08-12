@@ -16,17 +16,20 @@ namespace Hemera.Chat.API.Controllers;
 public class AccountController : ControllerBase
 {
     private UserManager<ApplicationUser> _userManager;
+    private SignInManager<ApplicationUser> _signInManager;
     private RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger _logger;
 
     public AccountController(
-        UserManager<ApplicationUser> userManager,
+        UserManager<ApplicationUser> userManager, 
+        SignInManager<ApplicationUser> signInManager, 
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration,
         ILogger<AccountController> logger)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -74,6 +77,15 @@ public class AccountController : ControllerBase
         return Unauthorized();
     }
 
+    [HttpPost]
+    [Route("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+
+        return Ok();
+    }
+    
     [HttpPost]
     [Route("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)

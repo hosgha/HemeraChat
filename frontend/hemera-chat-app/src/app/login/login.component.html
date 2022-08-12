@@ -1,0 +1,25 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<div id="login-container" style="margin: auto; margin-top: 50px; width: 25%; height:auto">
+  <form #loginForm = "ngForm" (ngSubmit) = "onSubmit(loginForm)" >
+    <div class="imgcontainer">
+      <img src="../../assets/images/img_avatar1.png" alt="Avatar" class="avatar">
+    </div>
+    <div class="container">
+      <label for="uname"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" ngModel>
+  
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password" ngModel>
+          
+      <button type = "submit">Login</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+
+      <label *ngIf="isLoginFailed" style="color: red;margin: 5px;">
+        Wrong password or Username!
+      </label>
+    </div>
+  </form>
+</div>

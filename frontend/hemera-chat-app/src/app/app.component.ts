@@ -1,45 +1,46 @@
-import { Component, NgZone } from '@angular/core';  
-import { Message } from '../models/message.model';  
-import { ChatService } from '../services/chat.service';  
+import { Component } from '@angular/core';
+import { StorageService } from '../_services/storage.service';
+import { AuthService } from '../_services/auth.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  private roles: string[] = [];
+
+  isLoggedIn = false;
+  showAdminBoard = false;
+  showModeratorBoard = false;
+  username?: string;
   
-@Component({  
-  selector: 'app-root',  
-  templateUrl: './app.component.html',  
-  styleUrls: ['./app.component.css']  
-})  
-export class AppComponent {  
+  constructor(
+    private storageService: StorageService,
+     private authService: AuthService
+     ) { }
   
-  title = 'ClientApp';  
-  txtMessage: string = '';  
-  uniqueID: string = new Date().getTime().toString();  
-  messages = new Array<Message>();  
-  message : Message = new Message();  
-  constructor(  
-    private chatService: ChatService,  
-    private _ngZone: NgZone  
-  ) {  
-    this.subscribeToEvents();  
-  }  
-  sendMessage(): void {  
-    if (this.txtMessage) {  
-      this.message.clientuniqueid = this.uniqueID;  
-      this.message.type = "sent";  
-      this.message.message = this.txtMessage;  
-      this.message.date = new Date();  
-      this.messages.push(this.message);  
-      this.chatService.sendMessage(this.message);  
-      this.txtMessage = '';  
-    }  
-  }  
-  private subscribeToEvents(): void {  
-  
-    this.chatService.messageReceived.subscribe((message: Message) => {  
-      this._ngZone.run(() => {
-        if (message.clientuniqueid !== this.uniqueID) {  
-          message.type = "received";  
-          this.messages.push(message);  
-        }  
-      });  
-    });  
-  }  
-}  
+    ngOnInit(): void {
+    this.isLoggedIn = this.storageService.isLoggedIn();
+    if (this.isLoggedIn) {
+      const user = this.storageService.getUser();
+      this.roles = user.roles;
+      this.showAdminBoard = this.roles.includes('ROLE_ADMIN');
+      this.showModeratorBoard = this.roles.includes('ROLE_MODERATOR');
+      this.username = user.username;
+    }
+  }
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: res => {
+        console.log(res);
+        this.storageService.clean();
+      },
+      error: err => {
+        console.log(err);
+      }
+    });
+    
+    window.location.reload();
+  }
+}

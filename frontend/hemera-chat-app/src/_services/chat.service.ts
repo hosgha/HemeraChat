@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';  
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';  
-import { Message } from '../models/message.model';  
+import { Message } from '../_models/message.model';  
   
 @Injectable()  
 export class ChatService {  
@@ -23,7 +23,7 @@ export class ChatService {
   private createConnection() {  
     this._hubConnection = new HubConnectionBuilder()  
       .withUrl('http://localhost:5199/ChatHub')  
-      .build();  
+      .build();
   }  
   
   private startConnection(): void {  

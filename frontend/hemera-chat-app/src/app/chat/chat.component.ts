@@ -1,8 +1,10 @@
 import { Component, NgZone, Renderer2, ElementRef, ViewChild } from '@angular/core';  
 import { TransferType } from '../../_enums/transfer-type';
 import { Message } from '../../_models/message.model';  
-import { ChatService } from '../../_services/chat.service';  
-  
+import { ChatService } from '../../_services/chat.service';
+import { AuthService } from '../../_services/auth.service';
+import {Router} from "@angular/router";
+
 @Component({  
   selector: 'app-root',  
   templateUrl: './chat.component.html',  
@@ -13,39 +15,37 @@ export class ChatComponent {
   @ViewChild('mainDiv') mainDiv!: ElementRef;
   title = 'ClientApp';  
   txtMessage: string = '';  
-  uniqueID: string = new Date().getTime().toString();  
+  currentUser: string;
   messages = new Array<Message>();  
   message : Message = new Message();  
 
   constructor(  
     private chatService: ChatService,  
-    private _ngZone: NgZone,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private authService: AuthService,
+    private router: Router
   ) {  
     this.subscribeToEvents();
-      
-  }  
+  }
+
+  ngOnInit(): void {
+    this.currentUser = localStorage.getItem('username') || '';
+  }
 
   sendMessage(): void {  
-    if (this.txtMessage) {  
-      this.message.UniqueId = this.uniqueID;  
-      this.message.TransferType = TransferType.sent;  
-      this.message.Content = this.txtMessage;  
-      this.message.CreatedDate = new Date();  
+    if (this.txtMessage) {
+      this.message.content = this.txtMessage;  
+      this.message.createdDate = new Date();
+      this.message.sender = this.currentUser;
       this.messages.push(this.message);  
-      this.chatService.sendMessage(this.message);  
+      this.chatService.sendDirectMessage(this.message);  
       this.txtMessage = '';  
     }  
   }  
   private subscribeToEvents(): void {  
   
-    this.chatService.messageReceived.subscribe((message: Message) => {  
-      this._ngZone.run(() => {
-        if (message.UniqueId !== this.uniqueID) {  
-          message.TransferType = TransferType.received;  
-          this.messages.push(message);  
-        }  
-      });  
+    this.chatService.messageReceived.subscribe((message: Message) => {
+      this.messages.push(message);
     });  
   }  
 
@@ -57,5 +57,10 @@ export class ChatComponent {
   closeNav() {
     this.renderer.setStyle(this.menuItem.nativeElement, 'width', '0');
     this.renderer.setStyle(this.mainDiv.nativeElement, 'marginLeft', '0');
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }  

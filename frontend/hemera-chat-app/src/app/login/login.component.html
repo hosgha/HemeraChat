@@ -1,5 +1,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<app-loading *ngIf="isLoading"></app-loading>
+
 <div id="login-container" style="margin: auto; margin-top: 50px; width: 25%; height:auto">
   <form #loginForm = "ngForm" (ngSubmit) = "onSubmit(loginForm)" >
     <div class="imgcontainer">

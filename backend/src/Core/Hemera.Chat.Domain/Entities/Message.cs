@@ -9,7 +9,6 @@ public class Message
     public string Reciever { get; set; } = null!;
     public string Content { get; set; } = null!;
     public string ReplayFromUniqueId { get; set; } = default!;
-    public TransferType TransferType { get; set; }
     public MessageType Type { get; set; }
     public ReactType ReactType { get; set; }
     public DateTime CreatedDate { get; set; }

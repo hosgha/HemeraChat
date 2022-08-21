@@ -11,11 +11,14 @@ import {Router} from "@angular/router";
 export class LoginComponent implements OnInit {
   isLoggedIn = false;
   isLoginFailed = false;
+  isLoading = false;
   errorMessage = '';
   roles: string[] = [];
-  constructor(private authService: AuthService,
+  constructor(
+    private authService: AuthService,
     private router: Router, 
-    private storageService: StorageService) { }
+    private storageService: StorageService
+    ) { }
   
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
@@ -24,13 +27,14 @@ export class LoginComponent implements OnInit {
     }
   }
   onSubmit(form : any): void {
-    debugger;
     this.authService.login(form.value.username, form.value.password).subscribe({
       next: data => {
         this.storageService.saveUser(data);
         this.isLoginFailed = false;
         this.isLoggedIn = true;
         this.roles = this.storageService.getUser().roles;
+        this.isLoading = true;
+        localStorage.setItem('username', form.value.username);        
         this.router.navigate(['/chat']);
       },
       error: err => {

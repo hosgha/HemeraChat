@@ -18,7 +18,7 @@ export class AuthService {
     this.loginModel.Username = username;
     //this.loginModel.Email = email;
     this.loginModel.Password = password;
-
+    
     return this.http.post(AUTH_API + 'login',this.loginModel,httpOptions);
   }
 

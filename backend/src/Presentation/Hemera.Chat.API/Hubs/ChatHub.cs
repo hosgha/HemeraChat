@@ -1,21 +1,40 @@
 ﻿using Hemera.Chat.Entities;
-using Hemera.Chat.Service;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hemera.Chat.Hubs;
+
+[Authorize]
 public class ChatHub : Hub
 {
-    private readonly IChatService _chatService;
+    private readonly static ConnectionMapping<string> _connections =
+        new ConnectionMapping<string>();
 
-    public ChatHub(IChatService chatService)
+    public async Task SendDirectMessage(Message message)
     {
-        _chatService = chatService;
+        string? name = Context?.User?.Identity?.Name;
+
+        foreach (var connectionId in _connections.GetConnections(message.Reciever))
+        {
+            await Clients.Client(connectionId).SendAsync("ReceivedMessage", message);
+        }
     }
 
-    public async Task NewMessage(Message msg)
+    public override async Task OnConnectedAsync()
     {
-        await Clients.All.SendAsync("MessageReceived", msg);
+        string? name = Context?.User?.Identity?.Name;
 
-        await _chatService.SaveMessageAsync(msg);
+        _connections.Add(name, Context.ConnectionId);
+
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        string? name = Context?.User?.Identity?.Name;
+
+        _connections.Remove(name, Context.ConnectionId);
+
+        await base.OnDisconnectedAsync(exception);
     }
 }

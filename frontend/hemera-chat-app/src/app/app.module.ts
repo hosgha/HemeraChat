@@ -10,6 +10,7 @@ import { ChatComponent } from './chat/chat.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { HttpClientModule } from '@angular/common/http';
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
-    ChatComponent
+    ChatComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

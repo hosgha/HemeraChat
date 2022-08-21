@@ -1,28 +1,39 @@
 import { EventEmitter, Injectable } from '@angular/core';  
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';  
-import { Message } from '../_models/message.model';  
+import { Message } from '../_models/message.model';
+import { StorageService } from '../_services/storage.service';
   
 @Injectable()  
 export class ChatService {  
   messageReceived = new EventEmitter<Message>();  
-  connectionEstablished = new EventEmitter<Boolean>();  
-  
+  connectionEstablished = new EventEmitter<Boolean>();
   private connectionIsEstablished = false;  
   private _hubConnection: HubConnection;  
   
-  constructor() {  
+  constructor(
+    private storageService: StorageService
+  ) {  
     this.createConnection();  
     this.registerOnServerEvents();  
-    this.startConnection();  
+    this.startConnection();
+  }
+  
+  sendDirectMessage(message: Message) {
+    if(this._hubConnection) {
+      
+      if(localStorage.getItem('username') == 'nader')
+        message.reciever = 'hediyeh';
+      else
+        message.reciever = 'nader';
+
+      this._hubConnection.invoke('SendDirectMessage', message);
+    }  
   }  
   
-  sendMessage(message: Message) {  
-    this._hubConnection.invoke('NewMessage', message);  
-  }  
-  
-  private createConnection() {  
+  private createConnection() {      
+    let jwtObject = this.storageService.getUser();
     this._hubConnection = new HubConnectionBuilder()  
-      .withUrl('http://localhost:5199/ChatHub')  
+      .withUrl('http://localhost:5199/ChatHub', { accessTokenFactory: () =>  jwtObject.token})  
       .build();
   }  
   
@@ -36,13 +47,13 @@ export class ChatService {
       })  
       .catch(err => {  
         console.log('Error while establishing connection, retrying...');  
-        setTimeout(() => { this.startConnection(); }, 5000);  
+        setTimeout(() => { this.startConnection(); }, 5000);
       });  
   }  
   
   private registerOnServerEvents(): void {  
-    this._hubConnection.on('MessageReceived', (data: any) => {  
-      this.messageReceived.emit(data);  
+    this._hubConnection.on('ReceivedMessage', (message: Message) => {
+      this.messageReceived.emit(message);  
     });  
   }  
 }   

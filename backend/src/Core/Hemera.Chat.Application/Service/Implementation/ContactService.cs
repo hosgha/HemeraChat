@@ -19,14 +19,14 @@ namespace Hemera.Chat.Service
 
         public async Task<List<ContactInfoDto>> GetAllContacts(string currentUser)
         {
-            var users = await _userManager.Users.Where(u => u.Id != currentUser).ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
 
             return _mapper.Map<List<ContactInfoDto>>(users);
         }
 
         public List<ContactInfoDto> GetContactByUserId(string userId)
         {
-            var users = _userManager.Users.Where(u=> u.Id == userId).ToList();
+            var users = _userManager.Users.ToList();
             var contactInfos = _mapper.Map<List<ContactInfoDto>>(users);
             return contactInfos;
         }

@@ -1,6 +1,7 @@
 ﻿using Hemera.Chat.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Hemera.Chat.Hubs;
 
@@ -12,9 +13,9 @@ public class ChatHub : Hub
 
     public async Task SendDirectMessage(Message message)
     {
-        string? name = Context?.User?.Identity?.Name;
+        string userId = Context?.UserIdentifier;
 
-        if(message.Sender != null && message.Sender == name)
+        if (message.Sender != null && message.Sender == userId)
         {
             foreach (var connectionId in _connections.GetConnections(message.Reciever))
             {
@@ -28,9 +29,9 @@ public class ChatHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        string? name = Context?.User?.Identity?.Name;
+        string userId = Context?.UserIdentifier;
 
-        _connections.Add(name, Context.ConnectionId);
+        _connections.Add(userId, Context.ConnectionId);
 
         await base.OnConnectedAsync();
     }

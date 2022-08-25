@@ -9,5 +9,6 @@ public class ApplicationUser : IdentityUser
 
     [Column(TypeName = "nvarchar(150)")]
     public string LastName { get; set; } = default!;
+    public string ProfileAvatarPath { get; set; } = default!;
     public bool IsOnline { get; set; }
 }

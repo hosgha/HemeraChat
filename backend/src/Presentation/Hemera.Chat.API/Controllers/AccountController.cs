@@ -4,10 +4,10 @@ using System.Text;
 using Hemera.Chat.Constants;
 using Hemera.Chat.Models;
 using Hemera.Chat.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
 
 namespace Hemera.Chat.API.Controllers;
 
@@ -19,20 +19,14 @@ public class AccountController : ControllerBase
     private SignInManager<ApplicationUser> _signInManager;
     private RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
-    private readonly ILogger _logger;
 
-    public AccountController(
-        UserManager<ApplicationUser> userManager, 
-        SignInManager<ApplicationUser> signInManager, 
-        RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration,
-        ILogger<AccountController> logger)
+    public AccountController(UserManager<ApplicationUser> userManager, IConfiguration configuration,
+        SignInManager<ApplicationUser> signInManager,RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpPost]
@@ -50,7 +44,7 @@ public class AccountController : ControllerBase
             var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
                 };
 
             foreach (var userRole in userRoles)
@@ -136,22 +130,5 @@ public class AccountController : ControllerBase
         }
 
         return Ok(new Response { Status = ResponseStatus.Success, Message = "User created successfully!" });
-    }
-
-    [HttpGet]
-    [Authorize(Roles = UserRoles.Admin)]
-    public IActionResult GetAll()
-    {
-        try
-        {
-            var result = _userManager.Users.ToList();
-            return Ok(result);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"GetAll users API failed! exception: {e}");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = ResponseStatus.Error, Message = "Fetching users were fail!" });
-        }
     }
 }

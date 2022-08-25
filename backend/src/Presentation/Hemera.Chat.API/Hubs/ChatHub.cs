@@ -14,9 +14,15 @@ public class ChatHub : Hub
     {
         string? name = Context?.User?.Identity?.Name;
 
-        foreach (var connectionId in _connections.GetConnections(message.Reciever))
+        if(message.Sender != null && message.Sender == name)
         {
-            await Clients.Client(connectionId).SendAsync("ReceivedMessage", message);
+            foreach (var connectionId in _connections.GetConnections(message.Reciever))
+            {
+                await Clients.Client(connectionId).SendAsync("ReceivedMessage", message);
+            }
+        } else
+        {
+            // TODO: Logged It
         }
     }
 

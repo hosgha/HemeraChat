@@ -1,9 +1,8 @@
-using Hemera.Chat.API;
 using Hemera.Chat.Application;
-using Hemera.Chat.Domain;
 using Hemera.Chat.EFCore;
 using Hemera.Chat.Entities;
 using Hemera.Chat.Hubs;
+using Hemera.Chat.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +62,8 @@ builder.Services.AddDbContext<HemeraChatDbContext>(options =>
 #endregion
 
 #region Identity 
+
+builder.Services.AddAutoMapper(typeof(ContactService));
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

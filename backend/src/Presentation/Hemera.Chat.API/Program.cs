@@ -1,3 +1,4 @@
+using Hemera.Chat.API;
 using Hemera.Chat.Application;
 using Hemera.Chat.EFCore;
 using Hemera.Chat.Entities;
@@ -127,7 +128,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddApplication();
 //builder.Services.AddDomain();
-//builder.Services.AddEFCore();
+builder.Services.AddEFCore();
 //builder.Services.AddAPI();
 
 

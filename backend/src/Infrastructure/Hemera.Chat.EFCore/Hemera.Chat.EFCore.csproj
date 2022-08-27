@@ -21,11 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Hemera.Chat.Application\Hemera.Chat.Application.csproj" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\..\Core\Hemera.Chat.Domain\Hemera.Chat.Domain.csproj" />
   </ItemGroup>
 
 </Project>

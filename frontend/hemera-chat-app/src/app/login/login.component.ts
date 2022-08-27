@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../_services/auth.service';
 import { StorageService } from '../../_services/storage.service';
 import {Router} from "@angular/router";
+import jwt_decode from 'jwt-decode';
 
 @Component({
   selector: 'app-login',
@@ -11,6 +12,7 @@ import {Router} from "@angular/router";
 export class LoginComponent implements OnInit {
   isLoggedIn = false;
   isLoginFailed = false;
+  isLoginValid = false;
   isLoading = false;
   errorMessage = '';
   roles: string[] = [];
@@ -26,6 +28,7 @@ export class LoginComponent implements OnInit {
       this.roles = this.storageService.getUser().roles;
     }
   }
+
   onSubmit(form : any): void {
     this.authService.login(form.value.username, form.value.password).subscribe({
       next: data => {
@@ -34,7 +37,7 @@ export class LoginComponent implements OnInit {
         this.isLoggedIn = true;
         this.roles = this.storageService.getUser().roles;
         this.isLoading = true;
-        localStorage.setItem('username', form.value.username);        
+        localStorage.setItem('username', form.value.username);               
         this.router.navigate(['/chat']);
       },
       error: err => {
@@ -43,4 +46,13 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
+  getDecodedAccessToken(token: string): any {
+    try {
+      return jwt_decode(token);
+    } catch(Error) {
+      return null;
+    }
+  }
+      
 }

@@ -1,22 +1,63 @@
 <div class="flex-container">
-  <div class="flex-item" id="chat-sidebar">
-    <button (click)="logout()">Logout</button>
+  <div class="flex-item" id="chat-sidebar">    
+    <div class="sidebar-header">
+      <div class="head-navbar">
+        <img class="avatar self-avatar" src="../../assets/images/{{currentUser.id}}.png" />   
+        <div class="dropdown">
+          <button class="dropbtn">
+            <svg viewBox="0 0 28 28" width="28" height="28" class=""><path fill="currentColor" d="M12 7a2 2 0 1 0-.001-4.001A2 2 0 0 0 12 7zm0 2a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 9zm0 6a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 15z"></path></svg>
+          </button>
+          <div class="dropdown-content">
+            <a class="disabled" style="color:gray" href="#">NewGroup</a>
+            <a class="disabled" style="color:gray"  href="#">Settings</a>
+            <a (click)="logout()">Logout</a>
+          </div>
+        </div> 
+      </div>      
+    </div>
+    <div class="row search-box">
+      <div>
+          <div class="input-group">
+              <input class="form-control border-end-0 border rounded-pill" type="search" value="search" id="example-search-input">
+              <span  class="input-group-append">
+                  <button  class="btn btn-outline-secondary bg-white border-bottom-0 border rounded-pill ms-n5" type="button">
+                      <i  class="fa fa-search"></i>
+                  </button>
+              </span>
+          </div>
+      </div>
   </div>
-  <div class="flex-item" id="chatbox">
-    <div class="inbox_msg">
+
+    <div class="sidebar-contacts" *ngFor="let contact of contacts; let i = index; trackBy: trackByMethod">
+      <div class="contact-item" (click)="selectContact(contact)">
+        <img class="avatar contact-avatar"  src="../../assets/images/{{contact.profileAvatarPath}}" />
+        <span class="contact-item-name">{{contact.firstName}} {{contact.lastName}}</span>
+      </div>    
+    </div>
+  </div>
+  <div class="flex-item" id="chatbox" *ngIf="selectedContact">
+    <div class="chatbox-header head-navbar">
+      <div class="sidebar-contacts">
+        <div class="contact-item">
+          <img class="avatar contact-avatar"  src="../../assets/images/{{selectedContact.profileAvatarPath}}" />
+          <span class="contact-item-name">{{selectedContact.firstName}} {{selectedContact.lastName}}</span>
+        </div>    
+      </div>
+    </div>
+    <div id="message-box" class="inbox_msg">
       <div class="msg_history">
-        <div *ngFor="let msg of messages">      
-          <div class="incoming_msg" *ngIf="msg.sender !== currentUser">
+        <div *ngFor="let msg of selectedContactMessages; let i = index; trackBy: trackByMethod">
+          <div class="incoming_msg" *ngIf="msg.receiver === currentUser.id">
             <div class="received_msg received_withd_msg">
-              <p>
+              <p id="incoming-message">
                 {{msg.content}}
               </p>
               <span class="time_date"> {{msg.createdDate | date:'medium'}} </span>
             </div>
           </div>
-          <div class="outgoing_msg" *ngIf="msg.sender === currentUser">
+          <div class="outgoing_msg" *ngIf="msg.sender === currentUser.id">
             <div class="sent_msg">
-              <p>
+              <p id="outgoing-message">
                 {{msg.content}}
               </p>
               <span class="time_date"> {{msg.createdDate | date:'medium'}}</span>
@@ -33,5 +74,12 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="flex-item notselected" id="chatbox" *ngIf="!selectedContact">
+    <h3>Hemera Chat Application</h3>
+    <p>Designed and Developed By <b>Hossein Ghasemi</b></p>
+    <p>https://github.com/hosgha</p>
+    <p>hosgha@gmail.com</p>
+    <p>@2022</p>
   </div>
 </div>

@@ -4,12 +4,13 @@ import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
 import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
-import { httpInterceptorProviders } from '../_helpers/HttpRequestInterceptor';
 import { AppRoutingModule } from './app-routing.module';
 import { ChatComponent } from './chat/chat.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { httpInterceptorProviders } from '../_helpers/HttpRequestInterceptor';
+import { SignalRInterceptorProviders } from '../_helpers/SignalRInterceptor';
 import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
@@ -28,8 +29,9 @@ import { LoadingComponent } from './loading/loading.component';
     HttpClientModule,
   ],
   providers: [
+    httpInterceptorProviders,
+    SignalRInterceptorProviders,
     ChatService,
-    httpInterceptorProviders
   ],
   bootstrap: [AppComponent]
 })

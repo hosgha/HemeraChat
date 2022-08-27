@@ -1,6 +1,6 @@
 export class Message {
     sender : string;
-    reciever : string;
+    receiver : string;
     content : string;
     replayFromUserId : number;
     type : number;

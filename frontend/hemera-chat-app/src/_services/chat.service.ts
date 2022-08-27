@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';  
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';  
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Message } from '../_models/message.model';
 import { StorageService } from '../_services/storage.service';
   
@@ -7,35 +7,40 @@ import { StorageService } from '../_services/storage.service';
 export class ChatService {  
   messageReceived = new EventEmitter<Message>();  
   connectionEstablished = new EventEmitter<Boolean>();
-  private connectionIsEstablished = false;  
-  private _hubConnection: HubConnection;  
+  private _hubConnection: HubConnection;
+  connectionIsEstablished = false;
   
   constructor(
     private storageService: StorageService
   ) {  
-    this.createConnection();  
+    this.createAndStartConnection();  
     this.registerOnServerEvents();  
     this.startConnection();
   }
   
-  sendDirectMessage(message: Message) {
-    if(this._hubConnection) {
+  sendDirectMessage(message: Message) : boolean {
+    if(this._hubConnection && this._hubConnection.state === "Connected") {      
+      this._hubConnection.invoke('SendDirectMessage', message)
+      .then(() => {
+        return true;
+      })
+      .catch( err => {
+        console.log(`Sending direct message is failed! error: ${err}`)
+        return false;
+      });
       
-      if(localStorage.getItem('username') == 'nader')
-        message.reciever = 'hediyeh';
-      else
-        message.reciever = 'nader';
+      return true;
 
-      this._hubConnection.invoke('SendDirectMessage', message);
-    }  
+    } else { return false; }
   }  
   
-  private createConnection() {      
+  private createAndStartConnection() {      
     let jwtObject = this.storageService.getUser();
     this._hubConnection = new HubConnectionBuilder()  
-      .withUrl('http://localhost:5199/ChatHub', { accessTokenFactory: () =>  jwtObject.token})  
+      .withUrl('http://localhost:5199/ChatHub', { accessTokenFactory: () =>  jwtObject.token})
+      .withAutomaticReconnect()
       .build();
-  }  
+  }
   
   private startConnection(): void {  
     this._hubConnection  
@@ -46,14 +51,20 @@ export class ChatService {
         this.connectionEstablished.emit(true);  
       })  
       .catch(err => {  
-        console.log('Error while establishing connection, retrying...');  
-        setTimeout(() => { this.startConnection(); }, 5000);
+        console.log(`Error while establishing connection, error: ${err}, retrying... `);  
+        setTimeout(() => { this.startConnection(); }, 1000);
       });  
   }  
   
   private registerOnServerEvents(): void {  
     this._hubConnection.on('ReceivedMessage', (message: Message) => {
-      this.messageReceived.emit(message);  
+      this.messageReceived.emit(message);
     });  
-  }  
+  }
+
+  closeConnection() {
+    if (this._hubConnection) {
+      this._hubConnection.stop();
+   }
+  }
 }   

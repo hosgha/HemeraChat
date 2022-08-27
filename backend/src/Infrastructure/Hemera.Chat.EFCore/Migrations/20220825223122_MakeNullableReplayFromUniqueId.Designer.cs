@@ -4,6 +4,7 @@ using Hemera.Chat.EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hemera.Chat.EFCore.Migrations
 {
     [DbContext(typeof(HemeraChatDbContext))]
-    partial class HemeraChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220825223122_MakeNullableReplayFromUniqueId")]
+    partial class MakeNullableReplayFromUniqueId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +54,7 @@ namespace Hemera.Chat.EFCore.Migrations
                     b.Property<int>("ReactType")
                         .HasColumnType("int");
 
-                    b.Property<string>("Receiver")
+                    b.Property<string>("Reciever")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Login } from '../_models/login.model';
-const AUTH_API = 'http://localhost:5199/api/v1/account/';
+import { environment } from './../environments/environment';
+const API_URL = environment.apiUrl + 'account/';
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
@@ -11,7 +12,7 @@ const httpOptions = {
 })
 export class AuthService {
   loginModel : Login = new Login();
-
+  
   constructor(private http: HttpClient) {}
   
   login(username: string, password: string): Observable<any> {
@@ -19,12 +20,12 @@ export class AuthService {
     //this.loginModel.Email = email;
     this.loginModel.Password = password;
     
-    return this.http.post(AUTH_API + 'login',this.loginModel,httpOptions);
+    return this.http.post(API_URL + 'login',this.loginModel,httpOptions);
   }
 
   register(username: string, email: string, password: string): Observable<any> {
     return this.http.post(
-      AUTH_API + 'register',
+      API_URL + 'register',
       {
         username,
         email,
@@ -36,7 +37,7 @@ export class AuthService {
 
   registerAdmin(username: string, email: string, password: string): Observable<any> {
     return this.http.post(
-      AUTH_API + 'register-admin',
+      API_URL + 'register-admin',
       {
         username,
         email,
@@ -47,7 +48,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(AUTH_API + 'logout', { }, httpOptions);
+    return this.http.post(API_URL + 'logout', { }, httpOptions);
   }
 
 }

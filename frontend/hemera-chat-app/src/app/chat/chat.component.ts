@@ -61,7 +61,7 @@ export class ChatComponent implements OnInit {
         this.pushToContactMessages(message);
         this.txtMessage = '';
       } else {
-        alert('Connection refused!');
+        //alert('Connection refused!');
         
         this.router.navigate(['/chat'])
         .then(() => {
@@ -114,7 +114,7 @@ export class ChatComponent implements OnInit {
 
   pushToContactMessages(message: Message) {
     var contactUserId = (message.sender === this.currentUser.id) ? message.receiver : message.sender;
-    
+
     let messagesIndex = this.contactMessages.findIndex(contact => contact.contactId == contactUserId);
     if(messagesIndex !== -1) {
       this.contactMessages[messagesIndex].messages.push(message);
